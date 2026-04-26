@@ -1,0 +1,249 @@
+--- a/src/pdb/mod.rs	2026-04-25 21:11:28
++++ b/src/pdb/mod.rs	2026-04-25 21:11:29
+@@ -533,6 +533,26 @@
+     name: DeviceSQLString,
+ }
+ 
++impl Album {
++    /// Returns this album row's ID.
++    #[must_use]
++    pub fn id(&self) -> AlbumId {
++        self.id
++    }
++
++    /// Returns the artist row ID associated with this album.
++    #[must_use]
++    pub fn artist_id(&self) -> ArtistId {
++        self.artist_id
++    }
++
++    /// Returns this album's display name.
++    #[must_use]
++    pub fn name(&self) -> &DeviceSQLString {
++        &self.name
++    }
++}
++
+ /// Contains the artist name and ID.
+ #[binrw]
+ #[derive(Debug, PartialEq, Eq, Clone)]
+@@ -565,6 +585,18 @@
+         let offset: u16 = ofs_far.map_or_else(|| ofs_near.into(), |v| v - 2) - 10;
+         SeekFrom::Current(offset.into())
+     }
++
++    /// Returns this artist row's ID.
++    #[must_use]
++    pub fn id(&self) -> ArtistId {
++        self.id
++    }
++
++    /// Returns this artist's display name.
++    #[must_use]
++    pub fn name(&self) -> &DeviceSQLString {
++        &self.name
++    }
+ }
+ 
+ /// Contains the artwork path and ID.
+@@ -578,6 +610,20 @@
+     path: DeviceSQLString,
+ }
+ 
++impl Artwork {
++    /// Returns this artwork row's ID.
++    #[must_use]
++    pub fn id(&self) -> ArtworkId {
++        self.id
++    }
++
++    /// Returns this artwork row's file path.
++    #[must_use]
++    pub fn path(&self) -> &DeviceSQLString {
++        &self.path
++    }
++}
++
+ /// Contains numeric color ID
+ #[binrw]
+ #[derive(Debug, PartialEq, Eq, Clone)]
+@@ -606,6 +652,20 @@
+     name: DeviceSQLString,
+ }
+ 
++impl Genre {
++    /// Returns this genre row's ID.
++    #[must_use]
++    pub fn id(&self) -> GenreId {
++        self.id
++    }
++
++    /// Returns this genre's display name.
++    #[must_use]
++    pub fn name(&self) -> &DeviceSQLString {
++        &self.name
++    }
++}
++
+ /// Represents a history playlist.
+ #[binrw]
+ #[derive(Debug, PartialEq, Eq, Clone)]
+@@ -643,6 +703,20 @@
+     name: DeviceSQLString,
+ }
+ 
++impl Key {
++    /// Returns this musical key row's ID.
++    #[must_use]
++    pub fn id(&self) -> KeyId {
++        self.id
++    }
++
++    /// Returns this musical key's display name.
++    #[must_use]
++    pub fn name(&self) -> &DeviceSQLString {
++        &self.name
++    }
++}
++
+ /// Represents a record label.
+ #[binrw]
+ #[derive(Debug, PartialEq, Eq, Clone)]
+@@ -654,6 +728,20 @@
+     name: DeviceSQLString,
+ }
+ 
++impl Label {
++    /// Returns this label row's ID.
++    #[must_use]
++    pub fn id(&self) -> LabelId {
++        self.id
++    }
++
++    /// Returns this label's display name.
++    #[must_use]
++    pub fn name(&self) -> &DeviceSQLString {
++        &self.name
++    }
++}
++
+ /// Represents a node in the playlist tree (either a folder or a playlist).
+ #[binrw]
+ #[derive(Debug, PartialEq, Eq, Clone)]
+@@ -852,6 +940,116 @@
+     /// Path of the file.
+     #[br(offset = base_offset, parse_with = FilePtr16::parse)]
+     file_path: DeviceSQLString,
++}
++
++impl Track {
++    /// Returns this track row's ID.
++    #[must_use]
++    pub fn id(&self) -> TrackId {
++        self.id
++    }
++
++    /// Returns the artist row ID for this track.
++    #[must_use]
++    pub fn artist_id(&self) -> ArtistId {
++        self.artist_id
++    }
++
++    /// Returns the album row ID for this track.
++    #[must_use]
++    pub fn album_id(&self) -> AlbumId {
++        self.album_id
++    }
++
++    /// Returns the genre row ID for this track.
++    #[must_use]
++    pub fn genre_id(&self) -> GenreId {
++        self.genre_id
++    }
++
++    /// Returns the musical key row ID for this track.
++    #[must_use]
++    pub fn key_id(&self) -> KeyId {
++        self.key_id
++    }
++
++    /// Returns the artwork row ID for this track.
++    #[must_use]
++    pub fn artwork_id(&self) -> ArtworkId {
++        self.artwork_id
++    }
++
++    /// Returns this track's sample rate in Hz.
++    #[must_use]
++    pub fn sample_rate(&self) -> u32 {
++        self.sample_rate
++    }
++
++    /// Returns this track's bitrate.
++    #[must_use]
++    pub fn bitrate(&self) -> u32 {
++        self.bitrate
++    }
++
++    /// Returns this track's tempo in centi-BPM (1/100 BPM).
++    #[must_use]
++    pub fn tempo_centi_bpm(&self) -> u32 {
++        self.tempo
++    }
++
++    /// Returns this track's play count.
++    #[must_use]
++    pub fn play_count(&self) -> u16 {
++        self.play_count
++    }
++
++    /// Returns this track's release year.
++    #[must_use]
++    pub fn year(&self) -> u16 {
++        self.year
++    }
++
++    /// Returns this track's playback duration in seconds.
++    #[must_use]
++    pub fn duration_seconds(&self) -> u16 {
++        self.duration
++    }
++
++    /// Returns this track's user rating.
++    #[must_use]
++    pub fn rating(&self) -> u8 {
++        self.rating
++    }
++
++    /// Returns this track's title.
++    #[must_use]
++    pub fn title(&self) -> &DeviceSQLString {
++        &self.title
++    }
++
++    /// Returns this track's filename.
++    #[must_use]
++    pub fn filename(&self) -> &DeviceSQLString {
++        &self.filename
++    }
++
++    /// Returns this track's file path.
++    #[must_use]
++    pub fn file_path(&self) -> &DeviceSQLString {
++        &self.file_path
++    }
++
++    /// Returns this track's comment.
++    #[must_use]
++    pub fn comment(&self) -> &DeviceSQLString {
++        &self.comment
++    }
++
++    /// Returns this track's analysis-file path.
++    #[must_use]
++    pub fn analyze_path(&self) -> &DeviceSQLString {
++        &self.analyze_path
++    }
+ }
+ 
+ // #[bw(little)] on #[binread] types does

@@ -1,0 +1,52 @@
+--- a/src/anlz.rs	2026-04-25 21:11:29
++++ b/src/anlz.rs	2026-04-25 21:11:29
+@@ -24,6 +24,14 @@
+ //! - <https://djl-analysis.deepsymmetry.org/rekordbox-export-analysis/anlz.html>
+ //! - <https://reverseengineering.stackexchange.com/questions/4311/help-reversing-a-edb-database-file-for-pioneers-rekordbox-software>
+ 
++#![allow(unused_parens)]
++// Downstream-only override: modular-bitfield macro expansion produces
++// unused-parens warnings that cannot be suppressed at the struct level
++// because the lint fires inside macro-expanded code outside the source
++// scope. Upstream PR will not include this allow; the upstream fix is
++// either a modular-bitfield update or rewriting the affected bitfield
++// structs not to trigger the lint. Tracked at the struct-level TODO
++// comments below.
+ #![allow(clippy::must_use_candidate)]
+ 
+ use crate::{util::ColorIndex, xor::XorStream};
+@@ -364,6 +372,7 @@
+ }
+ 
+ /// Single Column value in a Waveform Preview.
++// TODO downstream-only allow; upstream PR will fix the warning at source.
+ #[bitfield]
+ #[derive(BinRead, BinWrite, Debug, PartialEq, Eq, Clone, Copy)]
+ #[br(big, map = Self::from_bytes)]
+@@ -382,6 +391,7 @@
+ }
+ 
+ /// Single Column value in a Tiny Waveform Preview.
++// TODO downstream-only allow; upstream PR will fix the warning at source.
+ #[bitfield]
+ #[derive(BinRead, BinWrite, Debug, PartialEq, Eq, Clone, Copy)]
+ #[br(big, map = Self::from_bytes)]
+@@ -422,6 +432,7 @@
+ }
+ 
+ /// Single Column value in a Waveform Color Detail section.
++// TODO downstream-only allow; upstream PR will fix the warning at source.
+ #[bitfield]
+ #[derive(BinRead, BinWrite, Debug, PartialEq, Eq, Clone, Copy)]
+ #[br(map = Self::from_bytes)]
+--- a/src/xml.rs	2026-04-25 21:11:29
++++ b/src/xml.rs	2026-04-25 21:11:29
+@@ -174,6 +174,8 @@
+ }
+ 
+ /// 0 star = "@0", 1 star = "51", 2 stars = "102", 3 stars = "153", 4 stars = "204", 5 stars = "255"
++// TODO downstream-only allow; upstream PR will fix the warning at source.
++#[allow(dead_code)]
+ #[derive(Debug, PartialEq, Clone, Copy, Serialize, Deserialize)]
+ enum StarRating {
+     Zero,
