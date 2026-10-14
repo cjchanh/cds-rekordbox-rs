@@ -1,0 +1,48 @@
+{
+  "repo_notes": [
+    {
+      "content": "cds-rekordbox-rs is a read-only Rust workspace for inspecting Pioneer rekordbox device-export audio metadata without mutating a DJ USB — extracted from Archivist Sort after a read-only validation run on a working 740-track library. Core invariants: it never writes to rekordbox libraries, never moves/renames/deletes/retags audio, never calls network services, and a parse failure on a single ANLZ file is silently skipped so the reader never panics. Scope is ANLZ-only: title/artist/genre/rating/play_count live in PIONEER/rekordbox/export.pdb, whose rekordcrate-0.3 Track struct exposes no pub fields — explicitly deferred by spec 52 AC-03.",
+      "author": "Devin"
+    },
+    {
+      "content": "Layout: root Cargo.toml is a two-crate workspace (resolver 2, edition 2021). crates/cds-anlz-rs/src/lib.rs exposes read_device_export, which walks PIONEER/USBANLZ/<P*>/<id>/ANLZ0000.DAT via walkdir, parses each with rekordcrate::anlz::ANLZ, and extracts the PPTH embedded track path, BPM (median Beat.tempo / 100.0, undoing centi-BPM), duration from the last Beat.time, beat_grid_present, and hot_cue_count from CueList/ExtendedCueList; tests/rekordbox_smoke.rs runs against tests/fixtures/anlz/sample.dat. crates/cds-audio-metadata-rs/src/lib.rs exposes read_id3 returning an AudioMetadata whose source field records whether fields came from local tags vs higher-trust rekordbox-derived data. upstream/rekordcrate/ holds two prepared upstream patches with cover docs (0001-add-pub-accessors-and-docs, 0002-downstream-warnings-override). docs/verification.md is the gate record; scripts/green_check.sh runs fmt+clippy+build+test; MANIFEST.blake3 pins file integrity.",
+      "author": "Devin"
+    },
+    {
+      "content": "Vocabulary: ANLZ (rekordbox analysis file under PIONEER/USBANLZ), PPTH section (embedded path), BeatGrid and centi-BPM encoding, CueList/ExtendedCueList, export.pdb (deferred), rekordcrate 0.3.0 (MPL-2.0 dependency). First-class sources: docs/verification.md (the current green gate: fmt, clippy -D warnings, release build, 25 tests) and the crate-level doc comment in cds-anlz-rs/src/lib.rs which precisely states extracted fields and the PDB deferral.",
+      "author": "Devin"
+    }
+  ],
+  "pages": [
+    {
+      "title": "Overview",
+      "purpose": "Introduce the read-only rekordbox inspection workspace, its Archivist Sort origin (740-track validation run, originals untouched, library byte-identical), the two crates, and the licensing note (MIT for CDS code; rekordcrate dependency is MPL-2.0).",
+      "parent": null
+    },
+    {
+      "title": "Getting Started",
+      "purpose": "Document installation (cargo add cds-anlz-rs), workspace build/test commands (cargo build --workspace --release, cargo test --workspace --release), and the 30-second read_device_export usage example from the README.",
+      "parent": "Overview"
+    },
+    {
+      "title": "Read-Only Scope and Guarantees",
+      "purpose": "Enumerate the explicit non-goals from both crate READMEs: no writes to libraries or audio files, no export.pdb parsing, no title/artist/genre/rating/play_count recovery, no network calls, no committed sample USB data — and the deterministic never-panic policy where a bad ANLZ file is silently skipped.",
+      "parent": "Overview"
+    },
+    {
+      "title": "cds-anlz-rs: Device-Export ANLZ Parsing",
+      "purpose": "Document crates/cds-anlz-rs/src/lib.rs: read_device_export's walk of PIONEER/USBANLZ/**/ANLZ0000.DAT, the rekordcrate::anlz::ANLZ parse path, each extracted field (PPTH path, median centi-BPM to BPM conversion, duration from last Beat.time, beat_grid_present, hot_cue_count via CueList/ExtendedCueList), and the smoke test plus tests/fixtures/anlz/sample.dat fixture.",
+      "parent": null
+    },
+    {
+      "title": "cds-audio-metadata-rs: Tag Merging",
+      "purpose": "Document crates/cds-audio-metadata-rs/src/lib.rs: read_id3, the AudioMetadata shape, the source field distinguishing local-tag vs rekordbox-derived provenance, and the merge policy preferring higher-trust fields without writing tags.",
+      "parent": null
+    },
+    {
+      "title": "Upstream Patches and Verification",
+      "purpose": "Cover upstream/rekordcrate/: the two prepared patches and their cover docs (0001 adding pub accessors+docs aimed at unblocking PDB fields; 0002 downstream warnings override kept vendored-only), scripts/green_check.sh and docs/verification.md gate results, MANIFEST.blake3 integrity pinning, and .github/workflows/ci.yml.",
+      "parent": null
+    }
+  ]
+}
